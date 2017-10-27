@@ -1819,6 +1819,9 @@ struct flashlight_tool : tool
     }
 };
 
+// in remove_block.cc
+void remove_block(glm::ivec3 p);
+
 
 struct brush_edit_tool : tool {
 
@@ -1849,7 +1852,29 @@ struct brush_edit_tool : tool {
         get_ref()--;
     }
 
-    void long_use(raycast_info *rc) override {}
+    void long_use(raycast_info *rc) override {
+        for (auto i = mins.x-1; i <= maxs.x; i++)
+            for (auto j = mins.y-1; j <= maxs.y; j++)
+                for (auto k = mins.z-1; k <= maxs.z; k++) {
+                    glm::ivec3 p(i, j, k);
+                    ship->ensure_block(p);
+
+                    if (i == mins.x - 1 || j == mins.y - 1 || k == mins.z - 1 ||
+                        i == maxs.x || j == maxs.y || k == maxs.z) {
+                        ship->ensure_block(p);
+                        block *bl = ship->get_block(p);
+                        if (bl->type == block_empty) {
+                            bl->type = block_frame;
+                            ship->get_chunk_containing(p)->phys_chunk.valid = false;
+                            ship->get_chunk_containing(p)->render_chunk.valid = false;
+                        }
+                    }
+                    else {
+                        remove_block(p);
+                    }
+                }
+    }
+
     void cycle_mode() override { mode = (mode + 1) % 6; }
 
     void preview(raycast_info *rc, frame_data *frame) override {
@@ -1888,7 +1913,7 @@ struct brush_edit_tool : tool {
     }
 
     void get_description(char *str) override {
-        static const char *modenames[] = { "Min X", "Min Y", "Min Z", "Max X", "Max Y", "Max Z" };
+        static const char *modenames[] = { "Min X", "Max X", "Min Y", "Max Y", "Min Z", "Max Z" };
         sprintf(str, "Brush edit tool - Adjust %s", modenames[mode]);
     }
 
