@@ -1834,10 +1834,10 @@ struct brush_edit_tool : tool {
     int& get_ref() {
         switch (mode) {
         case 0: return mins.x;
-        case 1: return mins.y;
-        case 2: return mins.z;
-        case 3: return maxs.x;
-        case 4: return maxs.y;
+        case 1: return maxs.x;
+        case 2: return mins.y;
+        case 3: return maxs.y;
+        case 4: return mins.z;
         case 5: return maxs.z;
         }
     }
