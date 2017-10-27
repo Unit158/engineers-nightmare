@@ -119,7 +119,8 @@ unsigned frame_index;
 sw_mesh *frame_sw;
 sw_mesh *surfs_sw[6];
 GLuint simple_shader, unlit_shader, add_overlay_shader, remove_overlay_shader, ui_shader, ui_sprites_shader;
-GLuint sky_shader, unlit_instanced_shader, lit_instanced_shader, particle_shader, modelspace_uv_shader;
+GLuint sky_shader, unlit_instanced_shader, lit_instanced_shader, particle_shader, modelspace_uv_shader, brush_shader;
+GLuint brush2_shader;
 texture_set *world_textures;
 texture_set *skybox;
 ship_space *ship;
@@ -728,6 +729,8 @@ init()
     sky_shader = load_shader("shaders/sky.vert", "shaders/sky.frag");
     particle_shader = load_shader("shaders/particle.vert", "shaders/particle.frag");
     modelspace_uv_shader = load_shader("shaders/simple_modelspace_uv.vert", "shaders/simple.frag");
+    brush_shader = load_shader("shaders/simple.vert", "shaders/brush.frag");
+    brush2_shader = load_shader("shaders/simple.vert", "shaders/brush2.frag");
 
     frame_hw = upload_mesh(frame_sw);         /* needed for overlay */
 
@@ -1819,16 +1822,74 @@ struct flashlight_tool : tool
 
 struct brush_edit_tool : tool {
 
+    glm::ivec3 mins;
+    glm::ivec3 maxs;
+    int mode;
+
+    brush_edit_tool() : mins(1, 1, 1), maxs(3, 3, 3), mode(0) {}
+
     void select() override {}
     void unselect() override {}
-    void use(raycast_info *rc) override {}
-    void alt_use(raycast_info *rc) override {}
+
+    int& get_ref() {
+        switch (mode) {
+        case 0: return mins.x;
+        case 1: return mins.y;
+        case 2: return mins.z;
+        case 3: return maxs.x;
+        case 4: return maxs.y;
+        case 5: return maxs.z;
+        }
+    }
+
+    void use(raycast_info *rc) override {
+        get_ref()++;
+    }
+    void alt_use(raycast_info *rc) override {
+        get_ref()--;
+    }
+
     void long_use(raycast_info *rc) override {}
-    void cycle_mode() override {}
-    void preview(raycast_info *rc, frame_data *frame) override {}
+    void cycle_mode() override { mode = (mode + 1) % 6; }
+
+    void preview(raycast_info *rc, frame_data *frame) override {
+        auto mat = frame->alloc_aligned<glm::mat4>(1);
+        *mat.ptr = glm::scale(glm::translate(glm::mat4(), glm::vec3(mins)), glm::vec3(maxs-mins));
+        mat.bind(1, frame);
+
+        glEnable(GL_BLEND);
+        glDisable(GL_CULL_FACE);
+        glUseProgram(brush2_shader);
+
+        glDepthFunc(GL_GREATER);
+        
+        draw_mesh(surfs_hw[0]);
+        draw_mesh(surfs_hw[1]);
+        draw_mesh(surfs_hw[2]);
+        draw_mesh(surfs_hw[3]);
+        draw_mesh(surfs_hw[4]);
+        draw_mesh(surfs_hw[5]);
+
+        glUseProgram(brush_shader);
+        glDepthFunc(GL_LEQUAL);
+        glDepthMask(false);
+
+        draw_mesh(surfs_hw[0]);
+        draw_mesh(surfs_hw[1]);
+        draw_mesh(surfs_hw[2]);
+        draw_mesh(surfs_hw[3]);
+        draw_mesh(surfs_hw[4]);
+        draw_mesh(surfs_hw[5]);
+        
+        glEnable(GL_CULL_FACE);
+        glDepthMask(true);
+        glUseProgram(simple_shader);
+        glDisable(GL_BLEND);
+    }
 
     void get_description(char *str) override {
-        sprintf(str, "Brush edit tool");
+        static const char *modenames[] = { "Min X", "Min Y", "Min Z", "Max X", "Max Y", "Max Z" };
+        sprintf(str, "Brush edit tool - Adjust %s", modenames[mode]);
     }
 
 };
