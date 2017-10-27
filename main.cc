@@ -1817,7 +1817,24 @@ struct flashlight_tool : tool
 };
 
 
-std::array<tool*, 8> tools {
+struct brush_edit_tool : tool {
+
+    void select() override {}
+    void unselect() override {}
+    void use(raycast_info *rc) override {}
+    void alt_use(raycast_info *rc) override {}
+    void long_use(raycast_info *rc) override {}
+    void cycle_mode() override {}
+    void preview(raycast_info *rc, frame_data *frame) override {}
+
+    void get_description(char *str) override {
+        sprintf(str, "Brush edit tool");
+    }
+
+};
+
+
+std::array<tool*, 9> tools {
     //tool::create_fire_projectile_tool(&pl),
     tool::create_add_block_tool(),
     tool::create_remove_block_tool(),
@@ -1828,6 +1845,8 @@ std::array<tool*, 8> tools {
     new remove_surface_entity_tool(),
     new add_wiring_tool(),
     //new flashlight_tool()
+
+    new brush_edit_tool(),
 };
 
 
