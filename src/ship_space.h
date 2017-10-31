@@ -192,3 +192,34 @@ struct ship_space {
 topo_info *
 topo_find(topo_info *p);
 
+
+struct cell_iter {
+    struct end {};
+    glm::ivec3 mins, maxs, cur;
+    glm::ivec3 operator*() { return cur; }
+
+    cell_iter & operator++() {
+        if (++cur.x > maxs.x) {
+            cur.x = mins.x;
+            if (++cur.y > maxs.y) {
+                cur.y = mins.y;
+                ++cur.z;
+            }
+        }
+        return *this;
+    }
+
+    bool operator!=(end const & e) {
+        return cur.z <= maxs.z;
+    }
+};
+
+struct box {
+    glm::ivec3 mins;
+    glm::ivec3 maxs;
+    box(glm::ivec3 const &mins, glm::ivec3 const &maxs) :
+        mins(mins), maxs(maxs) {}
+
+    cell_iter begin() { return { mins, maxs, mins }; }
+    cell_iter::end end() { return cell_iter::end{}; }
+};

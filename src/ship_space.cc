@@ -328,14 +328,10 @@ ship_space::ensure_chunk(glm::ivec3 v)
         ch = create_chunk(this);
 
         /* ensure any other missing possibly-enclosed chunks exist too */
-        for (auto k = this->mins.z + 1; k < this->maxs.z; k++) {
-            for (auto j = this->mins.y + 1; j < this->maxs.y; j++) {
-                for (auto i = this->mins.x + 1; i < this->maxs.x; i++) {
-                    auto &other_ch = this->chunks[glm::ivec3(i, j, k)];
-                    if (!other_ch) {
-                        other_ch = create_chunk(this);
-                    }
-                }
+        for (auto p : box(mins + 1, maxs - 1)) {
+            auto &other_ch = this->chunks[p];
+            if (!other_ch) {
+                other_ch = create_chunk(this);
             }
         }
     }
@@ -772,61 +768,51 @@ block *ship_space::get_block_neighbor(glm::ivec3 block, enum surface_index si) {
 }
 
 void ship_space::cut_out_cuboid(glm::ivec3 mins, glm::ivec3 maxs, surface_type type) {
-    for (auto i = mins.x - 1; i <= maxs.x + 1; i++) {
-        for (auto j = mins.y - 1; j <= maxs.y + 1; j++) {
-            for (auto k = mins.z - 1; k <= maxs.z + 1; k++) {
-                glm::ivec3 p(i, j, k);
-                ensure_block(p);
-                get_chunk_containing(p)->phys_chunk.valid = false;
-                get_chunk_containing(p)->render_chunk.valid = false;
-            }
-        }
+    for (auto p : box(mins - 1, maxs + 1)) {
+        ensure_block(p);
+        get_chunk_containing(p)->phys_chunk.valid = false;
+        get_chunk_containing(p)->render_chunk.valid = false;
     }
 
-    for (auto i = mins.x; i <= maxs.x; i++) {
-        for (auto j = mins.y; j <= maxs.y; j++) {
-            for (auto k = mins.z; k <= maxs.z; k++) {
-                glm::ivec3 p(i, j, k);
-                remove_block(p);
+    for (auto p : box(mins, maxs)) {
+        remove_block(p);
 
-                if (i == mins.x) {
-                    auto b = p + surface_index_to_normal(surface_xm);
-                    if (get_block(b)->type != block_empty) {
-                        set_surface(b, p, surface_xp, type);
-                    }
-                }
-                if (i == maxs.x) {
-                    auto b = p + surface_index_to_normal(surface_xp);
-                    if (get_block(b)->type != block_empty) {
-                        set_surface(b, p, surface_xm, type);
-                    }
-                }
+        if (p.x == mins.x) {
+            auto b = p + surface_index_to_normal(surface_xm);
+            if (get_block(b)->type != block_empty) {
+                set_surface(b, p, surface_xp, type);
+            }
+        }
+        if (p.x == maxs.x) {
+            auto b = p + surface_index_to_normal(surface_xp);
+            if (get_block(b)->type != block_empty) {
+                set_surface(b, p, surface_xm, type);
+            }
+        }
 
-                if (j == mins.y) {
-                    auto b = p + surface_index_to_normal(surface_ym);
-                    if (get_block(b)->type != block_empty) {
-                        set_surface(b, p, surface_yp, type);
-                    }
-                }
-                if (j == maxs.y) {
-                    auto b = p + surface_index_to_normal(surface_yp);
-                    if (get_block(b)->type != block_empty) {
-                        set_surface(b, p, surface_ym, type);
-                    }
-                }
+        if (p.y == mins.y) {
+            auto b = p + surface_index_to_normal(surface_ym);
+            if (get_block(b)->type != block_empty) {
+                set_surface(b, p, surface_yp, type);
+            }
+        }
+        if (p.y == maxs.y) {
+            auto b = p + surface_index_to_normal(surface_yp);
+            if (get_block(b)->type != block_empty) {
+                set_surface(b, p, surface_ym, type);
+            }
+        }
 
-                if (k == mins.z) {
-                    auto b = p + surface_index_to_normal(surface_zm);
-                    if (get_block(b)->type != block_empty) {
-                        set_surface(b, p, surface_zp, type);
-                    }
-                }
-                if (k == maxs.z) {
-                    auto b = p + surface_index_to_normal(surface_zp);
-                    if (get_block(b)->type != block_empty) {
-                        set_surface(b, p, surface_zm, type);
-                    }
-                }
+        if (p.z == mins.z) {
+            auto b = p + surface_index_to_normal(surface_zm);
+            if (get_block(b)->type != block_empty) {
+                set_surface(b, p, surface_zp, type);
+            }
+        }
+        if (p.z == maxs.z) {
+            auto b = p + surface_index_to_normal(surface_zp);
+            if (get_block(b)->type != block_empty) {
+                set_surface(b, p, surface_zm, type);
             }
         }
     }
