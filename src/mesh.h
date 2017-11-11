@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <glm/glm.hpp>
 #include <epoxy/gl.h>
 #include <BulletCollision/CollisionShapes/btTriangleMesh.h>
