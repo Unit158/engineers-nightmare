@@ -22,7 +22,7 @@ install:
     - wget http://launchpadlibrarian.net/157997579/libassimp3_3.0~dfsg-2_amd64.deb http://launchpadlibrarian.net/157997580/libassimp-dev_3.0~dfsg-2_amd64.deb http://launchpadlibrarian.net/205738508/libglm-dev_0.9.6.3-1_all.deb
     - sudo dpkg -i libassimp3_3.0~dfsg-2_amd64.deb libassimp-dev_3.0~dfsg-2_amd64.deb libglm-dev_0.9.6.3-1_all.deb
     # taken from http://gearchicken.com/wordpress/?p=105
-    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
+    - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 90
 
 script:
     - cmake .
