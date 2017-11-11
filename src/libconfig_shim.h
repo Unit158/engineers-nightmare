@@ -1,7 +1,7 @@
 #ifndef EN_LIBCONFIG_SHIM
 #define EN_LIBCONFIG_SHIM
 /* various shims around broken libconfig compat
- * http://upstream-tracker.org/versions/libconfig.html
+ * https://abi-laboratory.pro/tracker/timeline/libconfig/
  * is quite useful
  */
 
