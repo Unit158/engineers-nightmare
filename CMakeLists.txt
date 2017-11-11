@@ -177,3 +177,6 @@ foreach(test_src ${TESTS_SRCS})
 
 endforeach(test_src)
 
+#TODO: uncouple this. there is no need for chunk_test to know about bullet other than c++ obscenities.
+target_link_libraries(t/chunk_test ${BULLET_LIBRARIES})
+
