@@ -103,6 +103,13 @@ mat_position(glm::vec3 pos)
     return glm::translate(glm::mat4(1), pos);
 }
 
+// ivec3 shim for old versions of glm that lack implicit conversion from ivec3 -> vec3.
+static inline glm::mat4
+mat_position(glm::ivec3 pos)
+{
+    return mat_position(glm::vec3(pos));
+}
+
 static inline glm::mat4
 mat_scale(glm::vec3 scale) {
     return glm::scale(glm::mat4(1), scale);
