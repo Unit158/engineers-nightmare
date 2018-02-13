@@ -64,6 +64,12 @@
     <Filter Include="soloud\audiosource">
       <UniqueIdentifier>{f001c34d-b385-428a-a876-44090e1ece22}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\audio">
+      <UniqueIdentifier>{36aac324-df97-43ba-9cc5-892bed5718ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{7a30e23a-7c0e-4284-b74f-df6735b4b4d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\blob.cc">
@@ -321,6 +327,9 @@
     <ClCompile Include="src\soloud\src\filter\soloud_lofifilter.cpp">
       <Filter>soloud\filter</Filter>
     </ClCompile>
+    <ClCompile Include="src\audio\sound.cc">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\blob.h">
@@ -508,6 +517,12 @@
     </ClInclude>
     <ClInclude Include="src\soloud\src\audiosource\wav\stb_vorbis.h">
       <Filter>soloud\audiosource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\sound.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="src\audio\queued_source.h">
+      <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

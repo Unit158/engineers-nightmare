@@ -17,9 +17,9 @@
 #include <iostream>
 #include <memory>
 #include "src/libconfig_shim.h"
-#include "soloud.h"
 
 #include "src/asset_manager.h"
+#include "src/audio/sound.h"
 #include "src/bullet_debug_draw.h"
 #include "src/common.h"
 #include "src/component/component_system_manager.h"
@@ -77,8 +77,6 @@ struct {
 
 frame_info frame_info;
 
-SoLoud::Soloud * audio;
-
 struct per_camera_params {
     glm::mat4 view_proj_matrix;
     glm::mat4 inv_centered_view_proj_matrix;
@@ -104,6 +102,7 @@ gl_debug_callback(GLenum source __unused,
 frame_data *frames, *frame;
 unsigned frame_index;
 
+audio_engine audio;
 GLuint simple_shader, overlay_shader, ui_shader, ui_sprites_shader;
 GLuint sky_shader, particle_shader, modelspace_uv_shader, highlight_shader;
 GLuint palette_tex;
@@ -318,8 +317,7 @@ init()
 
     apply_video_settings();
 
-    audio = new SoLoud::Soloud();
-    audio->init();
+    audio = audio_engine();
 
     // Absorb all the init time so we dont try to catch up
     frame_info.tick();
@@ -715,6 +713,8 @@ update()
                 z->air_amount = 0;
             }
         }
+
+        audio.tick();
 
         /* allow the entities to tick */
         tick_readers(ship);
@@ -1424,9 +1424,6 @@ main(int, char **)
     run();
 
     ImGui_ImplSdlGL3_Shutdown();
-
-    audio->deinit();
-    delete audio;
 
     return 0;
 }
