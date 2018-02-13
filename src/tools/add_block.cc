@@ -5,8 +5,9 @@
 #include "../ship_space.h"
 #include "../mesh.h"
 #include "../player.h"
+#include "../sound.h"
 #include "tools.h"
-
+#include "soloud.h"
 
 extern GLuint overlay_shader;
 extern GLuint simple_shader;
@@ -14,12 +15,15 @@ extern player pl;
 
 extern ship_space *ship;
 
+extern sound s;
+
 extern asset_manager asset_man;
 extern glm::mat4 get_fp_item_matrix();
 
 struct add_block_tool : tool
 {
     raycast_info_block rc;
+    SoLoud::AudioSource *use_sound;
 
     void pre_use(player *pl) override {
         ship->raycast_block(pl->eye, pl->dir, MAX_REACH_DISTANCE, enter_exit_framing, &rc);
@@ -33,6 +37,8 @@ struct add_block_tool : tool
     {
         if (!can_use())
             return; /* n/a */
+
+        s.play_world_sound(*asset_man.get_sound("asset"));
 
         /* ensure we can access this x,y,z */
         ship->ensure_block(rc.p);
