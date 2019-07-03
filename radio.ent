@@ -1,0 +1,34 @@
+entity: {
+    components: {
+        type: {
+            name: "radio",
+        },
+        renderable: {
+            mesh: "panel_1x1",
+            material: "switch",
+        },
+        placeable: {
+            rot: "rot_15",
+            place: "eighth_block_snapped",
+        },
+        relative_position: {
+        },
+        physics: {
+            mesh: "panel_1x1",
+        },
+        surface_attachment: {
+        },
+        power: {
+            required_power: 1,
+            max_required_power: 1,
+        },
+        reader: {
+            name: "light brightness",
+            desc: "",
+        },
+        switch: {
+        },
+        wire_comms: {
+        }
+    };
+};

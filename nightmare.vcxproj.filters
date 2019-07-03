@@ -330,6 +330,9 @@
     <ClCompile Include="src\audio\sound.cc">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="src\audio\wavqueue.cc">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\blob.h">
@@ -521,7 +524,7 @@
     <ClInclude Include="src\audio\sound.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
-    <ClInclude Include="src\audio\queued_source.h">
+    <ClInclude Include="src\audio\wavqueue.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>

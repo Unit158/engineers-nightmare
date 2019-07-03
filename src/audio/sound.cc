@@ -1,15 +1,16 @@
 #include <map>
+#include <stack>
 #include <string>
 #include <vector>
+#include "..\asset_manager.h"
 #include "sound.h"
 #include "soloud.h"
 #include "soloud_wav.h"
 
-audio_engine::audio_engine()
+audio_engine::audio_engine(asset_manager & assetman)
 {
     engine = SoLoud::Soloud();
     engine.init();
-    callbacks = std::map<SoLoud::handle, void (&)()>();
 
     world_bus = SoLoud::Bus();
     player_bus = SoLoud::Bus();
@@ -23,6 +24,9 @@ audio_engine::audio_engine()
     menu_bus_handle = engine.play(menu_bus);
     music_bus_handle = engine.play(music_bus);
     engine.play(menu_bus);
+
+    music.load();
+    engine.play(music);
 }
 
 audio_engine::~audio_engine()
@@ -32,13 +36,6 @@ audio_engine::~audio_engine()
 
 void audio_engine::tick()
 {
-    for (auto callback_pair : callbacks)
-    {
-        if (!engine.isValidVoiceHandle(callback_pair.first))
-        {
-            callback_pair.second();
-        }
-    }
 }
 
 void audio_engine::apply_atmosphere_filter(float pressure)
@@ -51,35 +48,18 @@ void audio_engine::play_world_sound(SoLoud::AudioSource & sound)
     world_bus.play(sound);
 }
 
-void audio_engine::play_world_sound(SoLoud::AudioSource & sound, void (&callback) ())
-{
-    auto handle = world_bus.play(sound);
-    callbacks.insert(std::pair<SoLoud::handle, void(&)()>(handle, callback));
-}
-
 void audio_engine::play_player_sound(SoLoud::AudioSource & sound)
 {
     player_bus.play(sound);
 }
 
-void audio_engine::play_player_sound(SoLoud::AudioSource & sound, void(&callback) ())
-{
-    auto handle = player_bus.play(sound);
-    callbacks.insert(std::pair<SoLoud::handle, void(&)()>(handle, callback));
-}
 
 void audio_engine::play_menu_sound(SoLoud::AudioSource & sound)
 {
     menu_bus.play(sound);
 }
 
-void audio_engine::play_menu_sound(SoLoud::AudioSource & sound, void(&callback) ())
-{
-    auto handle = menu_bus.play(sound);
-    callbacks.insert(std::pair<SoLoud::handle, void(&)()>(handle, callback));
-}
-
-void audio_engine::update_menu_volume(float volume, bool kill = false)
+void audio_engine::update_menu_volume(float volume, bool kill)
 {
     if (volume < 1 / 128)
         return;
@@ -88,7 +68,7 @@ void audio_engine::update_menu_volume(float volume, bool kill = false)
     menu_bus.setInaudibleBehavior(true, kill);
 }
 
-void audio_engine::update_music_volume(float volume, bool kill = false)
+void audio_engine::update_music_volume(float volume, bool kill)
 {
     if (volume < 1 / 128)
         return;
@@ -97,7 +77,7 @@ void audio_engine::update_music_volume(float volume, bool kill = false)
     music_bus.setInaudibleBehavior(true, kill);
 }
 
-void audio_engine::update_world_player_volume(float volume, bool kill = false)
+void audio_engine::update_world_player_volume(float volume, bool kill)
 {
     if (volume < 1 / 128)
         return;
@@ -139,3 +119,7 @@ void audio_engine::play_world_player()
     }
 }
 
+void audio_engine::next_music_cue()
+{
+    
+}

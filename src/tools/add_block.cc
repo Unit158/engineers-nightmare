@@ -5,7 +5,6 @@
 #include "../ship_space.h"
 #include "../mesh.h"
 #include "../player.h"
-#include "../sound.h"
 #include "tools.h"
 #include "soloud.h"
 
@@ -14,8 +13,6 @@ extern GLuint simple_shader;
 extern player pl;
 
 extern ship_space *ship;
-
-extern sound s;
 
 extern asset_manager asset_man;
 extern glm::mat4 get_fp_item_matrix();
@@ -37,8 +34,6 @@ struct add_block_tool : tool
     {
         if (!can_use())
             return; /* n/a */
-
-        s.play_world_sound(*asset_man.get_sound("asset"));
 
         /* ensure we can access this x,y,z */
         ship->ensure_block(rc.p);
